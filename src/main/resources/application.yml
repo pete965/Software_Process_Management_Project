@@ -1,0 +1,9 @@
+server:
+  port: 80
+  tomcat:
+    uri-encoding: UTF-8
+
+spring:
+  #change different profile from maven
+  profiles:
+    active: @profileActive@
