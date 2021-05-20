@@ -3,10 +3,12 @@ package com.soulroomie.demo.consumer.service;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.soulroomie.demo.consumer.dto.voucher.*;
 import com.soulroomie.demo.consumer.service.mapper.voucher.BillerMapper;
+import com.soulroomie.demo.consumer.service.mapper.voucher.ServiceTypeMapper;
 import com.soulroomie.demo.consumer.service.mapper.voucher.VoucherBookingMapper;
 import com.soulroomie.demo.consumer.service.mapper.voucher.VoucherCustomerMapper;
 import com.soulroomie.demo.consumer.service.model.voucher.BillerInformationModel;
 import com.soulroomie.demo.consumer.service.model.voucher.CustomerModel;
+import com.soulroomie.demo.consumer.service.model.voucher.ServiceTypeModel;
 import com.soulroomie.demo.consumer.service.model.voucher.VoucherBookingModel;
 import com.soulroomie.demo.tools.Result;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,8 @@ public class VoucherService {
     BillerMapper billerMapper;
     @Resource
     VoucherBookingMapper voucherBookingMapper;
+    @Resource
+    ServiceTypeMapper serviceTypeMapper;
 
     public Result customerLogin(LoginCreDto loginCreDto) {
         LambdaQueryWrapper<CustomerModel> queryWrapper = new LambdaQueryWrapper<>();
@@ -87,6 +91,7 @@ public class VoucherService {
                 .date(voucherBookingDto.getDate())
                 .delivery_mode(voucherBookingDto.getDeliveryMode())
                 .msg(voucherBookingDto.getMsg())
+                .accept("not")
                 .service(voucherBookingDto.getService()).build();
         voucherBookingMapper.insert(voucherBookingModel);
         return Result.ok();
@@ -103,5 +108,29 @@ public class VoucherService {
         LambdaQueryWrapper<VoucherBookingModel> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(VoucherBookingModel::getCustomer_email,voucherViewDto.getCustomerEmailAddress());
         return Result.ok().data("voucherList",voucherBookingMapper.selectList(queryWrapper));
+    }
+
+    public Result acceptVoucherBooking(VoucherAcceptDto voucherAcceptDto) {
+        VoucherBookingModel voucherBookingModel = VoucherBookingModel.builder().accept("accept").build();
+        LambdaQueryWrapper<VoucherBookingModel> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(VoucherBookingModel::getId,voucherAcceptDto.getBookingId());
+        voucherBookingMapper.update(voucherBookingModel,queryWrapper);
+        return Result.ok();
+    }
+
+    public Result viewVoucherBooking() {
+        LambdaQueryWrapper<VoucherBookingModel> queryWrapper = new LambdaQueryWrapper<>();
+        return Result.ok().data("voucherList",voucherBookingMapper.selectList(queryWrapper));
+    }
+
+    public Result addServiceType(AddServiceDto addServiceDto) {
+        ServiceTypeModel serviceTypeModel = ServiceTypeModel.builder().name(addServiceDto.getName()).build();
+        serviceTypeMapper.insert(serviceTypeModel);
+        return Result.ok();
+    }
+
+    public Result viewServiceType() {
+        LambdaQueryWrapper<ServiceTypeModel> queryWrapper = new LambdaQueryWrapper<>();
+        return Result.ok().data("voucherList",serviceTypeMapper.selectList(queryWrapper));
     }
 }

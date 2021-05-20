@@ -14,4 +14,5 @@ public class VoucherBookingModel {
     private String delivery_mode;
     private String date;
     private String msg;
+    private String accept;
 }
