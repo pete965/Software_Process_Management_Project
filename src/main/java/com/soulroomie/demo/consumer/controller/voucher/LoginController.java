@@ -33,4 +33,11 @@ public class LoginController {
     public Result customerLogin(@RequestBody LoginCreDto loginCreDto) {
         return voucherService.customerLogin(loginCreDto);
     }
+
+    @RequestMapping("/admin")
+    @ResponseBody
+    //view appointment record
+    public Result adminLogin(@RequestBody LoginCreDto loginCreDto) {
+        return voucherService.adminLogin(loginCreDto);
+    }
 }

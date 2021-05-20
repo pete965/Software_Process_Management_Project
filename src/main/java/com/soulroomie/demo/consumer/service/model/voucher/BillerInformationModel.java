@@ -4,12 +4,11 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Builder;
 import lombok.Data;
 
-@TableName("voucher_customer")
+@TableName("biller_information")
 @Data
 @Builder
-public class CustomerModel {
+public class BillerInformationModel {
+    private String customer_email;
     private String name;
-    private String phone;
-    private String email;
-    private String password;
+    private String biller_email;
 }
