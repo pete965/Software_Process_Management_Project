@@ -7,3 +7,14 @@ spring:
   #change different profile from maven
   profiles:
     active: @profileActive@
+  mail:
+    host: smtp.qq.com
+    username: 2872985302@qq.com
+    password: kesdniuuukqmdgbb
+    port: 587
+    default-encoding: UTF-8
+    properties:
+      mail:
+        smtp:
+          socketFactoryClass: javax.net.ssl.SSLSocketFactory
+        debug: true

@@ -11,12 +11,17 @@ import com.soulroomie.demo.consumer.service.model.voucher.CustomerModel;
 import com.soulroomie.demo.consumer.service.model.voucher.ServiceTypeModel;
 import com.soulroomie.demo.consumer.service.model.voucher.VoucherBookingModel;
 import com.soulroomie.demo.tools.Result;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.Date;
 
 @Service
 public class VoucherService {
+    @Resource
+    JavaMailSender javaMailSender;
     @Resource
     VoucherCustomerMapper voucherCustomerMapper;
     @Resource
@@ -94,8 +99,37 @@ public class VoucherService {
                 .msg(voucherBookingDto.getMsg())
                 .accept("not")
                 .service(voucherBookingDto.getService()).build();
+        String emailAddress = voucherBookingDto.getCustomerEmail();
+        LambdaQueryWrapper<CustomerModel> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(CustomerModel::getEmail,emailAddress);
+        CustomerModel customerModel = voucherCustomerMapper.selectOne(queryWrapper);
+        String date = voucherBookingDto.getDate();
+        String msg = voucherBookingDto.getMsg();
+        String phone = customerModel.getPhone();
+        String name = customerModel.getName();
         voucherBookingMapper.insert(voucherBookingModel);
+        String textEmail = "Customer Email Address : " +
+                emailAddress +
+                "\nPhone : " +
+                phone +
+                "\nName : " +
+                name +
+                "\nDate : " +
+                date +
+                "\nMessage : " +
+                msg;
+        sendEmail("Voucher Booking",textEmail);
         return Result.ok();
+    }
+
+    private void sendEmail(String subject, String text) {
+        SimpleMailMessage mailMessage = new SimpleMailMessage();
+        mailMessage.setSubject(subject);
+        mailMessage.setFrom("2872985302@qq.com");
+        mailMessage.setTo("932070769@qq.com");
+        mailMessage.setSentDate(new Date());
+        mailMessage.setText(text);
+        javaMailSender.send(mailMessage);
     }
 
     public Result cancelVoucher(VoucherCancelDto voucherCancelDto) {
