@@ -118,15 +118,15 @@ public class VoucherService {
                 date +
                 "\nMessage : " +
                 msg;
-        sendEmail("Voucher Booking",textEmail);
+        sendEmail("Voucher Booking",textEmail,"932070769@qq.com");
         return Result.ok();
     }
 
-    private void sendEmail(String subject, String text) {
+    private void sendEmail(String subject, String text,String receiver) {
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setSubject(subject);
         mailMessage.setFrom("2872985302@qq.com");
-        mailMessage.setTo("932070769@qq.com");
+        mailMessage.setTo(receiver);
         mailMessage.setSentDate(new Date());
         mailMessage.setText(text);
         javaMailSender.send(mailMessage);
@@ -135,7 +135,17 @@ public class VoucherService {
     public Result cancelVoucher(VoucherCancelDto voucherCancelDto) {
         LambdaQueryWrapper<VoucherBookingModel> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(VoucherBookingModel::getId,voucherCancelDto.getVoucherBookingId());
+        VoucherBookingModel voucherBookingModel = voucherBookingMapper.selectOne(queryWrapper);
         voucherBookingMapper.delete(queryWrapper);
+        LambdaQueryWrapper<CustomerModel> customerModelLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        String email = voucherBookingModel.getCustomer_email();
+        customerModelLambdaQueryWrapper.eq(CustomerModel::getEmail,email);
+        String date = voucherBookingModel.getDate();
+        CustomerModel customerModel = voucherCustomerMapper.selectOne(customerModelLambdaQueryWrapper);
+        String name = customerModel.getName();
+        String phone=customerModel.getPhone();
+        String text = "Name : " + name + "\nPhone : "+phone+"\nEmail : "+email+"\nDate: "+date;
+        sendEmail("Cancel Voucher Booking",text,"932070769@qq.com");
         return Result.ok();
     }
 
@@ -149,7 +159,17 @@ public class VoucherService {
         VoucherBookingModel voucherBookingModel = VoucherBookingModel.builder().accept("accept").build();
         LambdaQueryWrapper<VoucherBookingModel> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(VoucherBookingModel::getId,voucherAcceptDto.getBookingId());
+        VoucherBookingModel voucherBookingModel1 = voucherBookingMapper.selectOne(queryWrapper);
+        String email = voucherBookingModel1.getCustomer_email();
+        LambdaQueryWrapper<CustomerModel> customerQueryWrapper = new LambdaQueryWrapper<>();
+        customerQueryWrapper.eq(CustomerModel::getEmail,email);
+        CustomerModel customerModel = voucherCustomerMapper.selectOne(customerQueryWrapper);
+        String name = customerModel.getName();
+        String phone = customerModel.getPhone();
+        String date = voucherBookingModel1.getDate();
         voucherBookingMapper.update(voucherBookingModel,queryWrapper);
+        String text = "Name : " + name + "\nPhone : "+phone+"\nEmail : "+email+"\nDate: "+date;
+        sendEmail("Voucher Accepted",text,email);
         return Result.ok();
     }
 
