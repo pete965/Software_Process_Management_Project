@@ -50,6 +50,7 @@ public class VoucherService {
         CustomerModel customerModel = CustomerModel.builder().email(customerRegisterDto.getEmail()).
                 name(customerRegisterDto.getName()).password(customerRegisterDto.getPassword()).
                 phone(customerRegisterDto.getPhone()).build();
+        System.out.println(customerModel.toString());
         voucherCustomerMapper.insert(customerModel);
         return Result.ok();
     }
@@ -132,5 +133,12 @@ public class VoucherService {
     public Result viewServiceType() {
         LambdaQueryWrapper<ServiceTypeModel> queryWrapper = new LambdaQueryWrapper<>();
         return Result.ok().data("voucherList",serviceTypeMapper.selectList(queryWrapper));
+    }
+
+    public Result viewInformation(VoucherViewDto customerRegisterDto) {
+        String email = customerRegisterDto.getCustomerEmailAddress();
+        LambdaQueryWrapper<CustomerModel> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(CustomerModel::getEmail,email);
+        return Result.ok().data("customer",voucherCustomerMapper.selectOne(queryWrapper));
     }
 }

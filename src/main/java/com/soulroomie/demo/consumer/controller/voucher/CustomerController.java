@@ -27,6 +27,12 @@ public class CustomerController {
     public Result updateInformation(@RequestBody CustomerRegisterDto customerRegisterDto) {
         return voucherService.updateInformation(customerRegisterDto);
     }
+    @RequestMapping("/information/view")
+    @ResponseBody
+    //view appointment record
+    public Result viewInformation(@RequestBody VoucherViewDto customerRegisterDto) {
+        return voucherService.viewInformation(customerRegisterDto);
+    }
     @RequestMapping("/biller/add")
     @ResponseBody
     //view appointment record
